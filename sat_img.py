@@ -52,7 +52,7 @@ def fetch_satellite_image(latitude, longitude):
         input_data=[
             SentinelHubRequest.input_data(
                 data_collection=DataCollection.SENTINEL2_L1C,
-                time_interval=("2020-07-01", "2020-07-30"),
+                time_interval=("2020-01-01", "2020-12-30"),
                 mosaicking_order=MosaickingOrder.LEAST_CC,
                 upsampling=ResamplingType.BILINEAR
             )
@@ -88,7 +88,7 @@ def fetch_satellite_image(latitude, longitude):
     image_ls = sorted(os.listdir('EarthFromAbove/static/images/'))
     print(image_ls)
     for image in image_ls:
-        if image != 'default.png' and image != 'grand_canyon.png' and image != image_name:
+        if image != 'default.png' and image != 'grand_canyon.png' and image != image_name and image !='test.png' and image != 'test2.png':
             try:
                 os.remove(path+image)
             except:

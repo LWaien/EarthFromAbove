@@ -18,6 +18,7 @@
 
         body {
             font-family: Arial, sans-serif;
+            background: rgb(221, 221, 221);
         }
 
         /* Navbar styling */
@@ -59,25 +60,39 @@
             color: #333;
         }
 
+        .banner {
+            width: 100%;
+            padding-bottom: 3rem;
+            background: 
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(73, 73, 73, 0) 100%, rgba(255, 255, 255, 1)), 
+                url("{{ url_for('static', filename='images/test2.png') }}") no-repeat center/cover;
+            background-blend-mode: multiply;
+            color: white;
+            font-size: 2rem;
+            font-family: sans-serif;
+        }
+
+
         /* Hero Section Styling */
         .hero {
             text-align: center;
-            padding-top: 5rem;
+            padding-top: 4.5rem;
             padding-bottom: 0rem;
-            background-color: #ffffff;
-            width: 40%;
+            background-color: transparent;
+            width: 60%;
             margin: auto;
         }
 
         .hero h2 {
-            font-size: 36px;
-            color: #333;
+            font-size: 65px;
+            width: 100%;
+            color: #ffffff;
             margin-bottom: 20px;
         }
 
         .hero p {
-            font-size: 18px;
-            color: #666;
+            font-size: 22px;
+            color: #ffffff;
             margin-bottom: 40px;
         }
 
@@ -85,17 +100,17 @@
         .form-container {
             display: flex;
             justify-content: center;
-            padding: 20px 0;
+            padding: 1rem 0;
         }
 
         .search-bar {
             margin: 0 auto;
             display: flex;
-            gap: 10px;
-            background-color: #dbdbdb;
+            gap: 15px;
+            background-color: #ffffff;
             border-radius: 50px;
             padding: 10px;
-            width: 60%;
+            width: 70%;
         }
 
         .search-bar input {
@@ -139,23 +154,58 @@
 
         /* Map Styling */
         #map {
-            width: 500px;
-            height: 400px;
+            width: 650px;
+            height: 550px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            border: #3d3d3d solid 2px;
         }
 
         /* Generated Image Styling */
         .satellite-image img {
-            height: 400px;
+            height: 550px;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            background-color: #f0f0f0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            background-color: transparent;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 18px;
             color: #666;
+            border: #3d3d3d solid 2px;
+        }
+
+        .location-panel {
+            width: 300px;
+            height: 550px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            border: #3d3d3d solid 2px;
+            background: white;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .location-panel h3 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .location-panel ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .location-panel li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .location-panel li:hover {
+            background: #f0f0f0;
         }
         /* Modal Styling */
     .modal {
@@ -197,7 +247,7 @@
 <body>
     <div class="navbar">
         <div class="navbar-logo">
-            <h1>Some logo</h1>
+            <h1>Earth From Above</h1>
         </div>
     
         <div class="navbar-links">
@@ -210,24 +260,80 @@
     </div>
     
     <!-- Hero Section -->
-    <div class="hero">
-        <h2>Explore the World from Above</h2>
-        <p>Enter the latitude and longitude of any location  or simply click on the map to generate a satellite image and explore the world from a new perspective.</p>
+    <div class="banner">
+        <div class="overlay"></div>
+        <div class="hero">
+            <h2>Explore Earth from Above</h2>
+            <p>Enter the latitude and longitude of any location  or simply click on the map to generate a satellite image and explore the world from a new perspective.</p>
+        </div>
+    
+        <!-- Form Section below the hero -->
+        <div class="form-container">
+            <form method="POST" action="/">
+                <div class="search-bar">
+                    <input type="text" id="latitude" name="latitude" placeholder="Latitude" required>
+                    <input type="text" id="longitude" name="longitude" placeholder="Longitude" required>
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <!-- Form Section below the hero -->
-    <div class="form-container">
-        <form method="POST" action="/">
-            <div class="search-bar">
-                <input type="text" id="latitude" name="latitude" placeholder="Latitude" required>
-                <input type="text" id="longitude" name="longitude" placeholder="Longitude" required>
-                <button type="submit">Search</button>
-            </div>
-        </form>
-    </div>
+    
 
     <!-- Map and Image Side by Side -->
     <div class="map-image-container">
+        <!-- Location Categories Panel -->
+        <div class="location-panel">
+            <h3>Quick Locations</h3>
+            <ul>
+                <!-- Major Cities -->
+                <li onclick="updateCoordinates(40.7128, -74.0060)">New York City, USA</li>
+                <li onclick="updateCoordinates(48.8566, 2.3522)">Paris, France</li>
+                <li onclick="updateCoordinates(35.6895, 139.6917)">Tokyo, Japan</li>
+                <li onclick="updateCoordinates(30.0444, 31.2357)">Cairo, Egypt</li>
+                <li onclick="updateCoordinates(34.0522, -118.2437)">Los Angeles, USA</li>
+                <li onclick="updateCoordinates(51.5074, -0.1278)">London, UK</li>
+                <li onclick="updateCoordinates(55.7558, 37.6173)">Moscow, Russia</li>
+                <li onclick="updateCoordinates(-33.8688, 151.2093)">Sydney, Australia</li>
+                <li onclick="updateCoordinates(19.4326, -99.1332)">Mexico City, Mexico</li>
+                <li onclick="updateCoordinates(-23.5505, -46.6333)">São Paulo, Brazil</li>
+            
+                <!-- Wonders of the World -->
+                <li onclick="updateCoordinates(-13.1631, -72.5450)">Machu Picchu, Peru</li>
+                <li onclick="updateCoordinates(29.9792, 31.1342)">Great Pyramid of Giza, Egypt</li>
+                <li onclick="updateCoordinates(27.1751, 78.0421)">Taj Mahal, India</li>
+                <li onclick="updateCoordinates(37.9715, 23.7262)">Acropolis of Athens, Greece</li>
+                <li onclick="updateCoordinates(41.8902, 12.4922)">Colosseum, Italy</li>
+                <li onclick="updateCoordinates(-22.9519, -43.2105)">Christ the Redeemer, Brazil</li>
+                <li onclick="updateCoordinates(43.7230, 10.3966)">Leaning Tower of Pisa, Italy</li>
+            
+                <!-- Natural Wonders -->
+                <li onclick="updateCoordinates(-25.3444, 131.0369)">Uluru, Australia</li>
+                <li onclick="updateCoordinates(36.1070, -112.1130)">Grand Canyon, USA</li>
+                <li onclick="updateCoordinates(-3.4653, -62.2159)">Amazon Rainforest, Brazil</li>
+                <li onclick="updateCoordinates(-16.5004, -68.1500)">Salar de Uyuni, Bolivia</li>
+                <li onclick="updateCoordinates(45.0420, -123.0980)">Crater Lake, USA</li>
+                <li onclick="updateCoordinates(27.9881, 86.9250)">Mount Everest, Nepal</li>
+                <li onclick="updateCoordinates(-22.9519, -43.2105)">Sugarloaf Mountain, Brazil</li>
+                <li onclick="updateCoordinates(-18.2871, 147.6992)">Great Barrier Reef, Australia</li>
+            
+                <!-- Deserts & Remote Places -->
+                <li onclick="updateCoordinates(23.4162, 25.6628)">Sahara Desert</li>
+                <li onclick="updateCoordinates(-14.2350, -51.9253)">Amazon Basin</li>
+                <li onclick="updateCoordinates(24.3963, 54.5730)">Rub' al Khali (Empty Quarter), Saudi Arabia</li>
+                <li onclick="updateCoordinates(40.4374, 116.5642)">Gobi Desert, Mongolia</li>
+                <li onclick="updateCoordinates(-77.8419, 166.6863)">McMurdo Station, Antarctica</li>
+                <li onclick="updateCoordinates(-54.8019, -68.3030)">Ushuaia, Argentina (Southernmost City)</li>
+                <li onclick="updateCoordinates(71.2906, -156.7886)">Utqiagvik (Barrow), Alaska (Northernmost City)</li>
+            
+                <!-- Unique Geographic Locations -->
+                <li onclick="updateCoordinates(64.9631, -19.0208)">Thingvellir National Park, Iceland</li>
+                <li onclick="updateCoordinates(21.4225, 39.8262)">Mecca, Saudi Arabia</li>
+                <li onclick="updateCoordinates(38.7223, -9.1393)">Lisbon, Portugal</li>
+                <li onclick="updateCoordinates(59.9139, 10.7522)">Oslo, Norway</li>
+            </ul>
+            
+        </div>
         <!-- Leaflet Map -->
         <div id="map"></div>
 
@@ -254,7 +360,7 @@
     
     <script>
         // Initialize the map
-        var map = L.map('map').setView([32.9441, -102.3909], 4);
+        var map = L.map('map').setView([32.9441, -102.3909], 2);
 
         // Add OpenStreetMap tile layer
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -310,6 +416,12 @@
                 }
             };
         });
+
+
+    function updateCoordinates(lat, lon) {
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lon;
+    }
     </script>
 </body>
 </html>
