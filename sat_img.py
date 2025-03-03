@@ -52,7 +52,7 @@ def fetch_satellite_image(latitude, longitude):
         input_data=[
             SentinelHubRequest.input_data(
                 data_collection=DataCollection.SENTINEL2_L1C,
-                time_interval=("2020-01-01", "2020-12-30"),
+                time_interval=("2020-07-01", "2020-07-30"),
                 mosaicking_order=MosaickingOrder.LEAST_CC,
                 upsampling=ResamplingType.BILINEAR
             )
