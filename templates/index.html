@@ -237,7 +237,7 @@
             {% if image_filename %}
                 <img src="{{ url_for('static', filename='images/' + image_filename) }}" alt="Satellite Image">
             {% else %}
-                <p>No image available. Enter coordinates above.</p>
+                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Satellite Image">
             {% endif %}
         </div>
     </div>
@@ -254,16 +254,17 @@
     
     <script>
         // Initialize the map
-        var map = L.map('map').setView([37.7749, -122.4194], 3); // Default to a world view
+        var map = L.map('map').setView([32.9441, -102.3909], 4);
 
         // Add OpenStreetMap tile layer
-        L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>'
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash;'
         }).addTo(map);
-
 
         // Marker variable
         var marker;
+
+        marker = L.marker([32.9441, -102.3909]).addTo(map)
 
         // Add click event listener to the map
         map.on('click', function(e) {

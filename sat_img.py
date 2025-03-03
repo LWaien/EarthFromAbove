@@ -1,11 +1,14 @@
 import os
+import dotenv
 from sentinelhub import SHConfig, SentinelHubRequest, MimeType, CRS, BBox, bbox_to_dimensions, bbox_to_resolution, DataCollection, ResamplingType, MosaickingOrder
 from PIL import Image, ImageEnhance
 
+dotenv.load_dotenv()
+
 # Sentinel Hub credentials (replace with your own credentials)
-CLIENT_ID = ''
-CLIENT_SECRET = ''
-INSTANCE_ID = ''
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+INSTANCE_ID = os.getenv("INSTANCE_ID")
 
 # Set up SentinelHub configuration
 config = SHConfig()
@@ -73,16 +76,29 @@ def fetch_satellite_image(latitude, longitude):
 
     # Generate filename with coordinates (latitude, longitude)
     coordinates_str = f"{latitude:.4f}_{longitude:.4f}"
-    filename = f"sat/static/images/{coordinates_str}.png"
+
+    image_name = f"{coordinates_str}.png"
+    path = "EarthFromAbove/static/images/"
+    filename = path + image_name
 
     # Save the image
     brightened_image.save(filename)
     print(f"Saved image: {filename}")
 
-    # Keep only the latest 30 images
-    MAX_IMAGES = 0
-    image_files = sorted(os.listdir('sat/static/images/'))
-    if len(image_files) > MAX_IMAGES:
-        for old_image in image_files[:-MAX_IMAGES]:
-            os.remove(os.path.join('images', old_image))
-            print(f"Deleted old image: {old_image}")
+    image_ls = sorted(os.listdir('EarthFromAbove/static/images/'))
+    print(image_ls)
+    for image in image_ls:
+        if image != 'default.png' and image != 'grand_canyon.png' and image != image_name:
+            try:
+                os.remove(path+image)
+            except:
+                print("unable to delete old unused umage")
+
+    # # Keep only the latest 30 images
+    # MAX_IMAGES = 0
+    # image_files = sorted(os.listdir('./static/images/'))
+    
+    # if len(image_files) > MAX_IMAGES:
+    #     for old_image in image_files[:-MAX_IMAGES]:
+    #         os.remove(os.path.join('images', old_image))
+    #         print(f"Deleted old image: {old_image}")
