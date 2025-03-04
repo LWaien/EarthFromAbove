@@ -78,14 +78,14 @@ def fetch_satellite_image(latitude, longitude):
     coordinates_str = f"{latitude:.4f}_{longitude:.4f}"
 
     image_name = f"{coordinates_str}.png"
-    path = "EarthFromAbove/static/images/"
+    path = "./static/images/"
     filename = path + image_name
 
     # Save the image
     brightened_image.save(filename)
     print(f"Saved image: {filename}")
 
-    image_ls = sorted(os.listdir('EarthFromAbove/static/images/'))
+    image_ls = sorted(os.listdir('./static/images/'))
     print(image_ls)
     for image in image_ls:
         if image != 'default.png' and image != 'grand_canyon.png' and image != image_name and image !='test.png' and image != 'test2.png':

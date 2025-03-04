@@ -18,7 +18,11 @@
 
         body {
             font-family: Arial, sans-serif;
-            background: rgb(221, 221, 221);
+            background: rgb(255, 255, 255);
+            background: 
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(80, 77, 77, 0) 40%, rgba(255, 255, 255, 1)), 
+                url("{{ url_for('static', filename='images/test2.png') }}") no-repeat center/cover;
+            background-blend-mode: multiply;
         }
 
         /* Navbar styling */
@@ -27,14 +31,15 @@
             justify-content: space-between;
             align-items: center;
             padding: 20px 30px;
-            background-color: #fff;
+            background-color: transparent;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: white;
         }
 
         .navbar-logo h1 {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: #ffffff;
         }
 
         .navbar-links {
@@ -44,7 +49,7 @@
 
         .navbar-links a {
             font-size: 16px;
-            color: #333;
+            color: #ffffff;
             text-decoration: none;
             transition: color 0.3s;
         }
@@ -57,16 +62,13 @@
             width: 20px;
             height: 20px;
             object-fit: contain;
-            color: #333;
+            color: #ffffff;
         }
 
         .banner {
             width: 100%;
             padding-bottom: 3rem;
-            background: 
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(73, 73, 73, 0) 100%, rgba(255, 255, 255, 1)), 
-                url("{{ url_for('static', filename='images/test2.png') }}") no-repeat center/cover;
-            background-blend-mode: multiply;
+            
             color: white;
             font-size: 2rem;
             font-family: sans-serif;
@@ -166,13 +168,31 @@
             height: 550px;
             border-radius: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-            background-color: transparent;
+            background-color: #888; /* Gray background */
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 18px;
-            color: #666;
+            color: white;
+            font-weight: bold;
             border: #3d3d3d solid 2px;
+        }
+
+        #loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Grey tint */
+            color: white;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 10px;
+            z-index: 1000;
         }
 
         .location-panel {
@@ -253,9 +273,7 @@
         <div class="navbar-links">
             <a href="#about">About</a>
             <a href="#api">API</a>
-            <a href="https://github.com" target="_blank">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Octicons-mark-github.svg/1024px-Octicons-mark-github.svg.png" alt="GitHub" class="github-icon"/>
-            </a>
+            <a href="#gallery"> Gallery</a>
         </div>
     </div>
     
@@ -263,8 +281,8 @@
     <div class="banner">
         <div class="overlay"></div>
         <div class="hero">
-            <h2>Explore Earth from Above</h2>
-            <p>Enter the latitude and longitude of any location  or simply click on the map to generate a satellite image and explore the world from a new perspective.</p>
+            <h2>Explore Any Location from Space</h2>
+            <p>Enter the latitude and longitude of any location or simply click on the map to generate a satellite image and explore the world from a new perspective.</p>
         </div>
     
         <!-- Form Section below the hero -->
@@ -340,10 +358,13 @@
         <!-- Generated Image Placeholder -->
         <!-- Satellite Image -->
         <div class="satellite-image">
+                <div id="loading-overlay">
+                    <span>Loading...</span>
+                </div>
             {% if image_filename %}
-                <img src="{{ url_for('static', filename='images/' + image_filename) }}" alt="Satellite Image">
+                <img src="{{ url_for('static', filename='images/' + image_filename) }}" alt="Satellite Image" onload="hideLoading()">
             {% else %}
-                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Satellite Image">
+                <img src="{{ url_for('static', filename='images/default.png') }}" alt="Satellite Image" onload="hideLoading()">
             {% endif %}
         </div>
     </div>
@@ -360,7 +381,10 @@
     
     <script>
         // Initialize the map
-        var map = L.map('map').setView([32.9441, -102.3909], 2);
+        var map = L.map('map', {worldCopyJump: true, maxBounds: [
+        [-90, -180], // Bottom-left corner
+        [90, 180]    // Top-right corner
+    ], }).setView([32.9441, -102.3909], 2);
 
         // Add OpenStreetMap tile layer
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -369,8 +393,6 @@
 
         // Marker variable
         var marker;
-
-        marker = L.marker([32.9441, -102.3909]).addTo(map)
 
         // Add click event listener to the map
         map.on('click', function(e) {
@@ -421,6 +443,39 @@
     function updateCoordinates(lat, lon) {
         document.getElementById('latitude').value = lat;
         document.getElementById('longitude').value = lon;
+    }
+
+    // Function to update image and show spinner
+        function updateImage(imageSrc) {
+            const image = document.getElementById("satellite-image");
+            const spinner = document.getElementById("loading-spinner");
+
+            // Show the spinner and blur the image
+            spinner.style.display = "block";
+            image.classList.add("blur");
+            
+            // Update the image source
+            image.src = imageSrc;
+
+            // Wait for the image to load
+            image.onload = () => {
+                // Hide the spinner and remove the blur effect once the image is loaded
+                spinner.style.display = "none";
+                image.classList.remove("blur");
+                image.classList.add("loaded");
+            };
+        }
+
+
+        document.querySelector("form").addEventListener("submit", function (event) {
+        // Prevent immediate form submission
+        const overlay = document.getElementById("loading-overlay");
+        overlay.style.display = "flex"; // Show the overlay
+    });
+
+    // This function should be called when the new image loads
+    function hideLoading() {
+        document.getElementById("loading-overlay").style.display = "none";
     }
     </script>
 </body>
